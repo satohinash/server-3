@@ -13,20 +13,45 @@
     <figure><img height="200" /></figure> <!-- プレビュー用（JSONのみ） -->
   </p>
   <p>
-    <button @click="fetchData">データ取得</button>
+    <button @click="fetchData">データ送信</button>
   </p>
 </body>
 
 <script>
   function dataset() {
     return {
-      data: false,
-      async fetchData() {
+      const reader = new FileReader();
+
+      let file = false;
+      const input = document.querySelector('input');
+      
+
+      document.querySelector('button').addEventListener('click', fetchData);
+
+      async function fetchData() {
+        const file = document.querySelector('input').files[0];
+
+        if (!file) {
+          window.alert('選んでから！');
+          return;
+        }
+
+        const body = {
+          filename: file.name,
+          image: image
+        };
+
         const url = 'https://httpbin.org/post';
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json; charset=utf-8'
+          },
+          body: JSON.stringify(body)
+        });
+
         const obj = await res.json();
-        this.data = obj;
-        console.log(JSON.stringify(this.data, null, 2));
+        console.log(JSON.stringify(obj, null, 2));
       }
     }
   }
